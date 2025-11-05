@@ -1,0 +1,27 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+      MARIADB_DATABASE: voipmonitor
+      MARIADB_USER: voipmonitor
+      MARIADB_PASSWORD: voipmonitor
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "3306:3306"
+  #    volumes:
+  #      - mariadb_data:/var/lib/mysql
+
+  voipmonitor:
+    image: ghcr.io/braams/voipmonitor:latest
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - ./voipmonitor.conf:/etc/voipmonitor/voipmonitor.conf:ro
+#      - voipmonitor_data:/var/spool/voipmonitor
