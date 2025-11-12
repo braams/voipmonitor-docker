@@ -17,11 +17,24 @@ services:
   #    volumes:
   #      - mariadb_data:/var/lib/mysql
 
-  voipmonitor:
-    image: ghcr.io/braams/voipmonitor:latest
+  voipmonitor-sniffer:
+    image: ghcr.io/braams/voipmonitor-sniffer:latest
     depends_on:
       mariadb:
         condition: service_healthy
     volumes:
       - ./voipmonitor.conf:/etc/voipmonitor/voipmonitor.conf:ro
 #      - voipmonitor_data:/var/spool/voipmonitor
+
+  voipmonitor-gui:
+    image: ghcr.io/braams/voipmonitor-gui:latest
+    platform: linux/amd64
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - ./configuration.php:/var/www/html/config/configuration.php:ro
+#      - voipmonitor_data:/var/spool/voipmonitor
+#      - ./key.php /var/www/html/key.php
+    ports:
+      - "8090:80/tcp"

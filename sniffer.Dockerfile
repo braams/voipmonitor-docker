@@ -5,7 +5,7 @@ ARG RELEASE="2025.09"
 ARG VERSION="2025.09.1"
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCH=arm64; else ARCH=armv6k; fi && \
-	URL="http://sourceforge.net/projects/voipmonitor/files/${RELEASE}/voipmonitor-${ARCH}-${VERSION}-static.tar.gz/download" && \
+	URL="https://sourceforge.net/projects/voipmonitor/files/${RELEASE}/voipmonitor-${ARCH}-${VERSION}-static.tar.gz/download" && \
 	echo "Downloading ${URL}" && \
 	wget --progress=dot:giga "${URL}" -O /voipmonitor-sniffer.tar.gz && \
 	tar xzfv voipmonitor-sniffer.tar.gz --strip-components=1
