@@ -3,7 +3,7 @@
 define('SPOOLDIR', '/var/spool/voipmonitor/');
 define('DISABLE_CHECK_SPOOLDIR', false);
 
-define('MYSQL_HOST', 'mysql'); // host.docker.internal
+define('MYSQL_HOST', 'mariadb'); // host.docker.internal
 define('MYSQL_DB', 'voipmonitor');
 define('MYSQL_USER', 'voipmonitor');
 define('MYSQL_PASS', 'voipmonitor');
