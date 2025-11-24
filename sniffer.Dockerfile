@@ -4,17 +4,24 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-	curl ca-certificates build-essential git default-libmysqlclient-dev checkinstall libvorbis-dev libpcap-dev \
+	wget ca-certificates unzip build-essential git default-libmysqlclient-dev checkinstall libvorbis-dev libpcap-dev \
     unixodbc-dev libsnappy-dev libcurl4-openssl-dev libssh-dev libjson-c-dev librrd-dev liblzo2-dev liblzma-dev \
     libglib2.0-dev libxml2-dev libzstd-dev liblz4-dev libpng-dev libgcrypt-dev libfftw3-dev libgoogle-perftools-dev \
     gnutls-dev libsrtp2-dev dpdk-dev libmpg123-dev libjpeg-dev libmp3lame-dev libb2-dev
 
-RUN cd /usr/src \
-	&& git clone https://github.com/voipmonitor/sniffer.git --depth 1 \
-	&& cd sniffer \
-	&& ./configure \
-	&& make \
-	&& make install
+#2025.09.1
+ARG SNIFFER_COMMIT=f8fca503e8f8cb7aa39950d3b5b2692cfe6580fe
+
+WORKDIR /usr/src
+
+RUN wget --progress=dot:giga "https://github.com/voipmonitor/sniffer/archive/${SNIFFER_COMMIT}.zip" \
+	&& unzip "${SNIFFER_COMMIT}.zip" \
+	&& mv "sniffer-${SNIFFER_COMMIT}" sniffer
+
+WORKDIR /usr/src/sniffer
+
+RUN ./configure \
+    && make -j$(nproc)
 
 FROM debian:bookworm-slim AS final
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,7 +39,7 @@ RUN apt-get update \
     libxrender1 libzstd1 zlib1g libmp3lame0 libmpg123-0 libjpeg62-turbo librte-ethdev23 librte-mbuf23 librte-mempool23 \
     librte-ring23 librte-eal23 libsrtp2-1 rrdtool
 
-COPY --from=builder /usr/local/sbin/voipmonitor /usr/local/sbin/voipmonitor
+COPY --from=builder /usr/src/sniffer/voipmonitor /usr/local/sbin/voipmonitor
 COPY --from=builder /usr/src/sniffer/config/voipmonitor.conf /etc/voipmonitor/voipmonitor.conf
 
 ENTRYPOINT ["/usr/local/sbin/voipmonitor", "--config-file=/etc/voipmonitor/voipmonitor.conf", "-k"]

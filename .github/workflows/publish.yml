@@ -28,6 +28,9 @@ jobs:
           - image_name: braams/voipmonitor-gui
             dockerfile: gui.Dockerfile
             platforms: linux/amd64
+          - image_name: braams/voipmonitor-sslkeylogger
+            dockerfile: sslkeylogger.Dockerfile
+            platforms: linux/amd64,linux/arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4

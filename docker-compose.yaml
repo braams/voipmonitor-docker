@@ -6,6 +6,9 @@ services:
       MARIADB_DATABASE: voipmonitor
       MARIADB_USER: voipmonitor
       MARIADB_PASSWORD: voipmonitor
+    command:
+      - --max-allowed-packet=100MB
+      - --innodb_file_per_table=1
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       start_period: 10s
@@ -14,8 +17,8 @@ services:
       retries: 3
     ports:
       - "3306:3306"
-#   volumes:
-#     - mariadb_data:/var/lib/mysql
+  #   volumes:
+  #     - mariadb_data:/var/lib/mysql
 
   sniffer:
     image: ghcr.io/braams/voipmonitor-sniffer:latest
@@ -24,17 +27,20 @@ services:
         condition: service_healthy
     volumes:
       - ./voipmonitor.conf:/etc/voipmonitor/voipmonitor.conf:ro
-#     - voipmonitor_data:/var/spool/voipmonitor
+      - ./voipmonitor_data:/var/spool/voipmonitor
+    ports:
+      - "4789:4789/udp"
+      - "1234:1234/udp"
 
   gui:
-    image: ghcr.io/braams/voipmonitor-gui:latest
+    image: ghcr.io/braams/voipmonitor-gui:gui
     platform: linux/amd64
     depends_on:
       mariadb:
         condition: service_healthy
     volumes:
       - ./configuration.php:/var/www/html/config/configuration.php
-#     - voipmonitor_data:/var/spool/voipmonitor
-#     - ./key.php:/var/www/html/key.php
+      - ./voipmonitor_data:/var/spool/voipmonitor
+    #      - ./key.php:/var/www/html/key.php
     ports:
       - "8090:80/tcp"

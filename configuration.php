@@ -13,7 +13,7 @@ define('MYSQL_CACERT', '');
 define('MYSQL_CAPATH', '');
 define('MYSQL_CIPHERS', '');
 
-define('VPMANAGERHOST', '127.0.0.1');
+define('VPMANAGERHOST', 'sniffer');
 define('VPMANAGERPORT', 5029);
 
 define('ENABLE_IP_REVERSE_LOOKUP', true);
@@ -22,7 +22,8 @@ define('DEFAULT_CDR_INTERVAL', 0);
 
 define('SNIFFER_NAME', 'voipmonitor');
 
-define('TIMEZONE', 'system default');
+define('TIMEZONE', 'UTC');
+define('SENSORS_TIMEZONE', 'UTC');
 
 define('DATE_FORMAT', 'Y-m-d');
 
